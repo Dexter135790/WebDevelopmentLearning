@@ -34,24 +34,37 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems)
-.then(()=>{
-    console.log("Successfully inserted!");
-})
-.catch((err)=>{
-    console.log(err);
-});
+
 
 
 
 
 app.get("/", (req, res)=>{
     
-    // Render the variables in the ejs code 
-    res.render("list", {
-        listTitle: "Today",
-        newListItems: items
+    Item.find()
+    .then((foundItems)=>{
+        if(foundItems.length === 0){
+            Item.insertMany(defaultItems)
+            .then(()=>{
+            console.log("Successfully inserted!");
+            })
+            .catch((err)=>{
+            console.log(err);
+            });
+            res.redirect("/");
+        }else{
+            res.render("list", {
+                listTitle: "Today",
+                newListItems: foundItems
+            });
+        }
+        
+    })
+    .catch((err)=>{
+        console.log(err);
     });
+    // Render the variables in the ejs code 
+    
 });
 
 app.post("/", (req, res)=>{
